@@ -1,17 +1,31 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
+import logging
 
 from database import engine, Base
 from scheduler import scheduler
 from routers import auth, inbox, draft, schedule, preferences
 
+logger = logging.getLogger(__name__)
+
+# Create tables at module load time (before workers fork when using --preload)
+try:
+    Base.metadata.create_all(bind=engine)
+except Exception as e:
+    logger.warning(f"Table creation skipped (may already exist): {e}")
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    Base.metadata.create_all(bind=engine)
-    scheduler.start()
+    try:
+        scheduler.start()
+    except Exception as e:
+        logger.warning(f"Scheduler start skipped: {e}")
     yield
-    scheduler.shutdown()
+    try:
+        scheduler.shutdown()
+    except Exception:
+        pass
 
 app = FastAPI(title="Draftly API", lifespan=lifespan)
 

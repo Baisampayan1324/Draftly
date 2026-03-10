@@ -6,19 +6,23 @@ services:
     region: oregon
     plan: free
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn main:app --workers 2 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT
+    startCommand: gunicorn main:app --workers 1 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT
     rootDir: backend
     envVars:
       - key: PYTHON_VERSION
         value: "3.11"
       - key: GROQ_API_KEY
-        sync: false  # Set manually in Render dashboard
+        sync: false
       - key: GOOGLE_CLIENT_ID
         sync: false
       - key: GOOGLE_CLIENT_SECRET
         sync: false
+      - key: GOOGLE_REDIRECT_URI
+        value: https://draftly-api.onrender.com/auth/gmail/callback
       - key: FRONTEND_URL
-        sync: false  # e.g., https://draftly.onrender.com
+        value: https://draftly.onrender.com
+      - key: DATABASE_URL
+        value: sqlite:///draftly.db
     healthCheckPath: /health
 
   # React Frontend (Static Site)
@@ -28,12 +32,12 @@ services:
     region: oregon
     plan: free
     buildCommand: npm install && npm run build
-    publishPath: dist
+    staticPublishPath: ./dist
     rootDir: frontend
     envVars:
       - key: VITE_API_URL
-        sync: false  # e.g., https://draftly-api.onrender.com
-    headers:
-      - path: /*
-        name: Cache-Control
-        value: no-cache
+        value: https://draftly-api.onrender.com
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
