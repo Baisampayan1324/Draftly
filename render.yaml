@@ -32,12 +32,8 @@ services:
     region: oregon
     plan: free
     buildCommand: npm install && npm run build
-    staticPublishPath: ./dist
+    staticPublishPath: dist
     rootDir: frontend
     envVars:
       - key: VITE_API_URL
         value: https://draftly-api.onrender.com
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html

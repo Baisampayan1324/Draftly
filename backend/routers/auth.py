@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 from google_auth_oauthlib.flow import Flow
 from googleapiclient.discovery import build
 from sqlalchemy.orm import Session
+from typing import Optional
 import os
 import urllib.parse
 import uuid
@@ -18,7 +19,7 @@ class AuthStartRequest(BaseModel):
     thread_id: str | None = None
 
 @router.post("/start")
-def start_auth(req: AuthStartRequest = None, db: Session = Depends(get_db)):
+def start_auth(req: Optional[AuthStartRequest] = None, db: Session = Depends(get_db)):
     client_config = {
         "web": {
             "client_id": os.getenv("GOOGLE_CLIENT_ID"),
@@ -48,7 +49,7 @@ def disconnect_auth(db: Session = Depends(get_db)):
     return {"status": "disconnected"}
 
 @router.get("/callback")
-def auth_callback(code: str, state: str = None, db: Session = Depends(get_db)):
+def auth_callback(code: str, state: Optional[str] = None, db: Session = Depends(get_db)):
     client_config = {
         "web": {
             "client_id": os.getenv("GOOGLE_CLIENT_ID"),
@@ -76,9 +77,9 @@ def auth_callback(code: str, state: str = None, db: Session = Depends(get_db)):
         token_db = GmailToken(user_id=user_id)
         db.add(token_db)
     
-    token_db.access_token = credentials.token
-    token_db.refresh_token = credentials.refresh_token
-    token_db.token_expiry = credentials.expiry
+    token_db.access_token = credentials.token  # type: ignore[assignment]
+    token_db.refresh_token = credentials.refresh_token  # type: ignore[assignment]
+    token_db.token_expiry = credentials.expiry  # type: ignore[assignment]
     
     db.commit()
     

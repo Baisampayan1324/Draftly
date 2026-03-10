@@ -7,7 +7,7 @@ import { useAppStore } from "@/store/useAppStore";
 import LandingPage from "./pages/LandingPage";
 import { ConnectedLayout } from "./components/ConnectedLayout";
 import InboxPage from "./pages/InboxPage";
-import SentPage from "./pages/SentPage";
+// import SentPage from "./pages/SentPage";
 import ComposePage from "./pages/ComposePage";
 import ScheduledPage from "./pages/ScheduledPage";
 import PreferencesPage from "./pages/PreferencesPage";
@@ -34,7 +34,7 @@ function AppRoutes() {
         <>
           <Route element={<ConnectedLayout />}>
             <Route path="/inbox" element={<InboxPage />} />
-            <Route path="/sent" element={<SentPage />} />
+            {/* <Route path="/sent" element={<SentPage />} /> */}
             <Route path="/compose" element={<ComposePage />} />
             <Route path="/scheduled" element={<ScheduledPage />} />
             <Route path="/preferences" element={<PreferencesPage />} />

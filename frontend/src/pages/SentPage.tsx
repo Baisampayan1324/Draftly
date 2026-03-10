@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from 'react'; // SentPage
 import { useQuery } from '@tanstack/react-query';
 import { getSent, type SentEmail } from '@/lib/api';
 import { Skeleton } from '@/components/ui/skeleton';
