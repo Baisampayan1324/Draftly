@@ -1,0 +1,6 @@
+GROQ_API_KEY=
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+GOOGLE_REDIRECT_URI=http://localhost:8000/auth/gmail/callback
+DATABASE_URL=sqlite:///draftly.db
+FRONTEND_URL=http://localhost:8080
