@@ -447,3 +447,56 @@ The assignment required a simple HITL terminal app. Draftly delivers that at its
 | Iteration safety cap (5)       | No        | Prevents infinite loops in production                 |
 
 ---
+
+## Deployment (Render)
+
+Draftly includes a `render.yaml` blueprint for one-click deployment to [Render](https://render.com).
+
+### Prerequisites
+
+1. A Render account
+2. Google Cloud OAuth credentials (see `GOOGLE_OAUTH_SETUP.md`)
+3. Groq API key from [console.groq.com](https://console.groq.com)
+
+### Deploy Steps
+
+1. **Push to GitHub** and connect the repo to Render
+2. **Create a Blueprint** in Render Dashboard → Blueprints → New Blueprint Instance
+3. **Select this repo** — Render will detect `render.yaml`
+4. **Configure environment variables** in Render dashboard:
+
+   **Backend (`draftly-api`):**
+   | Variable | Value |
+   |----------|-------|
+   | `GROQ_API_KEY` | Your Groq API key |
+   | `GOOGLE_CLIENT_ID` | From Google Cloud Console |
+   | `GOOGLE_CLIENT_SECRET` | From Google Cloud Console |
+   | `GOOGLE_REDIRECT_URI` | `https://draftly-api.onrender.com/auth/gmail/callback` |
+   | `FRONTEND_URL` | `https://draftly.onrender.com` |
+
+   **Frontend (`draftly`):**
+   | Variable | Value |
+   |----------|-------|
+   | `VITE_API_URL` | `https://draftly-api.onrender.com` |
+
+5. **Update Google Cloud Console** — add the production redirect URI to your OAuth credentials
+
+### Local Development
+
+```bash
+# Backend
+cd backend
+python -m venv venv
+venv\Scripts\activate  # Windows
+pip install -r requirements.txt
+cp .env.example .env   # Edit with your keys
+python main.py
+
+# Frontend (separate terminal)
+cd frontend
+npm install
+cp .env.example .env   # Edit with API URL
+npm run dev
+```
+
+---

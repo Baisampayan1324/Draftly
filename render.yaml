@@ -1,0 +1,39 @@
+services:
+  # FastAPI Backend
+  - type: web
+    name: draftly-api
+    runtime: python
+    region: oregon
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn main:app --workers 2 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT
+    rootDir: backend
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11"
+      - key: GROQ_API_KEY
+        sync: false  # Set manually in Render dashboard
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: FRONTEND_URL
+        sync: false  # e.g., https://draftly.onrender.com
+    healthCheckPath: /health
+
+  # React Frontend (Static Site)
+  - type: web
+    name: draftly
+    runtime: static
+    region: oregon
+    plan: free
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    rootDir: frontend
+    envVars:
+      - key: VITE_API_URL
+        sync: false  # e.g., https://draftly-api.onrender.com
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
