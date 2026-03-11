@@ -29,7 +29,7 @@ services:
   - type: web
     name: draftly
     runtime: static
-    region: oregon
+    # region: oregon
     plan: free
     buildCommand: npm install && npm run build
     rootDir: frontend
