@@ -1,7 +1,46 @@
+# services:
+#   # FastAPI Backend
+#   - type: web
+#     name: draftly-api
+#     runtime: python
+#     region: oregon
+#     plan: free
+#     buildCommand: pip install -r requirements.txt
+#     startCommand: gunicorn main:app --workers 1 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT
+#     rootDir: backend
+#     envVars:
+#       - key: PYTHON_VERSION
+#         value: "3.11"
+#       - key: GROQ_API_KEY
+#         sync: false
+#       - key: GOOGLE_CLIENT_ID
+#         sync: false
+#       - key: GOOGLE_CLIENT_SECRET
+#         sync: false
+#       - key: GOOGLE_REDIRECT_URI
+#         value: https://draftly-api.onrender.com/auth/gmail/callback
+#       - key: FRONTEND_URL
+#         value: https://draftly.onrender.com
+#       - key: DATABASE_URL
+#         value: sqlite:///draftly.db
+#     healthCheckPath: /health
+
+#   # React Frontend (Static Site)
+#   - type: web
+#     name: draftly
+#     runtime: static
+#     region: oregon
+#     plan: free
+#     buildCommand: npm install && npm run build
+#     rootDir: frontend
+#     envVars:
+#       - key: VITE_API_URL
+#         value: https://draftly-api.onrender.com
+
 services:
   # FastAPI Backend
   - type: web
-    name: draftly-api
+    name: draftly-1
     runtime: python
     region: oregon
     plan: free
@@ -18,21 +57,27 @@ services:
       - key: GOOGLE_CLIENT_SECRET
         sync: false
       - key: GOOGLE_REDIRECT_URI
-        value: https://draftly-api.onrender.com/auth/gmail/callback
+        value: https://draftly-1.onrender.com/auth/gmail/callback
       - key: FRONTEND_URL
-        value: https://draftly.onrender.com
+        value: https://draftly-2.onrender.com
       - key: DATABASE_URL
         value: sqlite:///draftly.db
     healthCheckPath: /health
 
   # React Frontend (Static Site)
   - type: web
-    name: draftly
-    runtime: static
-    region: oregon
-    plan: free
+    name: draftly-2
     buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
     rootDir: frontend
     envVars:
       - key: VITE_API_URL
-        value: https://draftly-api.onrender.com
+        value: https://draftly-1.onrender.com
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: no-cache
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
